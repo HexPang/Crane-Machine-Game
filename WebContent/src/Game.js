@@ -259,6 +259,11 @@ BasicGame.Game.prototype = {
 				this.hitGift = null;
 				this.sfx_lose.play();
 			}
+		}else if(this.claw_state == 3 || this.claw_state == 4){
+            var seed = parseInt(Math.random() * 100);
+            if (seed >= 50 && seed <= 51) {
+                this.claw.body.clearShapes();
+            }
 		}
 
 	},
