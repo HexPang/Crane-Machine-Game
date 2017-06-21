@@ -30,10 +30,11 @@ BasicGame.Game = function(game) {
 
 BasicGame.Game.prototype = {
 	claw : null,
-	claw_length : 120,
+	claw_length : 720,
 	claw_state : 0,
 	claw_speed : 5,
-	zero_point : [150,-450],
+	claw_rope:null,
+	zero_point : [150,120],
 	gifts : null,
 	layer : null,
 	sfx_win : null,
@@ -44,6 +45,7 @@ BasicGame.Game.prototype = {
     clawCollisionGroup:null,
     tilesCollisionGroup:null,
 	score_text:null,
+	max_doll:5,
 	score:0,
 	claw_sfx : function(index) {
 		for ( var i in this.sfx_claw) {
@@ -101,7 +103,7 @@ BasicGame.Game.prototype = {
 			//console.log(JSON.stringify([ dx, dy ]));
 			// var constraint =
 			// this.game.physics.p2.createDistanceConstraint(body1, body2, 50);
-			if (dx <= 20 && dy < 695) {
+			if (dx <= 15 && dy < 50) {
 				this.closeClaw(true);
 				this.claw_sfx(2);
 				this.hitGift = body2;
@@ -161,11 +163,12 @@ BasicGame.Game.prototype = {
 		this.claw.body.static = true;
 		this.claw.body.immovable = true;
 		this.closeClaw(false);
+        this.claw_rope = this.game.add.sprite(this.zero_point[0] - 4,this.zero_point[1] - this.claw.height / 2 - 3,'claw_rope');
 
 		this.gifts = this.game.add.group();
 		this.gifts.enableBody = true;
 		this.gifts.physicsBodyType = Phaser.Physics.P2JS;
-		for (var j = 1; j < 5; j++) {
+		for (var j = 1; j < this.max_doll; j++) {
 			var gift = this.gifts.create(x, y, 'sprite_' + j);
 			x += 75;
 			gift.body.debug = false;
@@ -197,7 +200,7 @@ BasicGame.Game.prototype = {
 				gift.destroy();
 				this.score++;
 				this.score_text.setText(" Score : " + this.score);
-				if (this.gifts.children.length < 5) {
+				if (this.gifts.children.length < this.max_doll) {
 					this.spawnDoll();
 				}
 			}
@@ -205,8 +208,10 @@ BasicGame.Game.prototype = {
 		// this.game.physics.p2.collide(this.gifts, this.layer);
 		if (this.claw_state == 1) {
 			this.claw.body.x += this.claw_speed;
+			this.claw_rope.x += this.claw_speed;
 		} else if (this.claw_state == 2) {
 			this.claw.body.y += this.claw_speed;
+            this.claw_rope.height += this.claw_speed;
 			if (this.claw.body.y >= this.claw_length) {
 				this.closeClaw(true);
 				this.claw_state = 3;
@@ -214,6 +219,7 @@ BasicGame.Game.prototype = {
 			}
 		} else if (this.claw_state == 3) {
 			this.claw.body.y -= this.claw_speed;
+            this.claw_rope.height -= this.claw_speed;
 			if (this.hitGift) {
 				this.hitGift.y -= this.claw_speed;
 			}
@@ -224,6 +230,7 @@ BasicGame.Game.prototype = {
 			}
 		} else if (this.claw_state == 4) {
 			this.claw.body.x -= this.claw_speed;
+            this.claw_rope.x -= this.claw_speed;
 			if (this.hitGift) {
 				this.hitGift.x -= this.claw_speed;
 			}

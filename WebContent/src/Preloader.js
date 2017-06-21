@@ -30,9 +30,11 @@ BasicGame.Preloader.prototype = {
 		//this.load.bitmapFont('caslon', 'fonts/caslon.png', 'fonts/caslon.xml');
 		//	+ lots of other required assets here
 		
-		this.load.image('claw', 'assets/claw_open.png');
-		this.load.image('claw_closed', 'assets/claw_closed.png');
-		for(var i = 1;i < 11;i++){
+		this.load.image('claw', 'assets/sprites/claw_open.png');
+		this.load.image('claw_closed', 'assets/sprites/claw_closed.png');
+        this.load.image('claw_rope', 'assets/sprites/claw_rope.png');
+
+        for(var i = 1;i < 11;i++){
 			this.load.image('sprite_' + i,'assets/sprites/' + i + '.png');
             this.load.image('sprite_' + i + "1",'assets/sprites/' + i + '1.png');
 		}
