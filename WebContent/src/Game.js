@@ -252,6 +252,7 @@ BasicGame.Game.prototype = {
 			if (seed >= 50 && seed <= 51) {
 				this.hitGift.static = false;
 				this.hitGift.immovable = false;
+                this.claw.body.clearShapes();
 				if(this.claw_state == 4){
 					this.hitGift.velocity.x = -this.claw_speed * 20;					
 				}
