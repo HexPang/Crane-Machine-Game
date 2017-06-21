@@ -30,7 +30,7 @@ BasicGame.Game = function(game) {
 
 BasicGame.Game.prototype = {
 	claw : null,
-	claw_length : 90,
+	claw_length : 290,
 	claw_state : 0,
 	claw_speed : 5,
 	zero_point : [150,-450],
@@ -40,6 +40,9 @@ BasicGame.Game.prototype = {
 	sfx_lose : null,
 	bgm : null,
 	sfx_claw : [],
+    giftCollisionGroup:null,
+    clawCollisionGroup:null,
+    tilesCollisionGroup:null,
 	claw_sfx : function(index) {
 		for ( var i in this.sfx_claw) {
 			var sfx = this.sfx_claw[i];
@@ -64,15 +67,17 @@ BasicGame.Game.prototype = {
 		}
 	},
 	closeClaw : function(isClose) {
-		// this.claw.body.clearShapes();
+		this.claw.body.clearShapes();
 		if (isClose) {
 			this.claw.loadTexture('claw_closed');
-			// this.claw.body.loadPolygon('physicsData', "claw_closed");
+			this.claw.body.loadPolygon('physicsData', "claw_closed");
 		} else {
 			this.claw.loadTexture('claw');
-			// this.claw.body.loadPolygon('physicsData', "claw_open");
+			this.claw.body.loadPolygon('physicsData', "claw_open");
 		}
-
+        this.claw.body.setCollisionGroup(this.clawCollisionGroup);
+        this.claw.body.collides([ this.tilesCollisionGroup, this.giftCollisionGroup ],
+            this.clawHitHandler, this);
 	},
 	clawHitHandler : function(body1, body2) {
 		if (this.claw_state == 2) {
@@ -99,11 +104,11 @@ BasicGame.Game.prototype = {
 		this.game.physics.p2.gravity.y = 1000;
 		this.game.physics.p2.setImpactEvents(true);
 		
-		var giftCollisionGroup = this.game.physics.p2.createCollisionGroup();
-		var clawCollisionGroup = this.game.physics.p2.createCollisionGroup();
-		var tilesCollisionGroup = this.game.physics.p2.createCollisionGroup();
+		this.giftCollisionGroup = this.game.physics.p2.createCollisionGroup();
+        this.clawCollisionGroup = this.game.physics.p2.createCollisionGroup();
+        this.tilesCollisionGroup = this.game.physics.p2.createCollisionGroup();
 		var map = this.game.add.tilemap('level1');
-		var x = 250;
+		var x = 350;
 		var y = 350;
 		
 		
@@ -123,17 +128,16 @@ BasicGame.Game.prototype = {
 
 		var tileObjects = this.game.physics.p2.convertTilemap(map, this.layer);
 		for ( var i in tileObjects) {
-			tileObjects[i].setCollisionGroup(tilesCollisionGroup);
-			tileObjects[i].collides([ giftCollisionGroup, clawCollisionGroup ]);
+			tileObjects[i].setCollisionGroup(this.tilesCollisionGroup);
+			tileObjects[i].collides([ this.giftCollisionGroup, this.clawCollisionGroup ]);
 		}
 		this.layer.debug = false;
 		this.claw = this.game.add.sprite(this.zero_point[0], this.zero_point[1],
 				'claw');
 		this.game.physics.p2.enable(this.claw, false);
 		this.claw.body.static = true;
-		this.claw.body.setCollisionGroup(clawCollisionGroup);
-		this.claw.body.collides([ tilesCollisionGroup, giftCollisionGroup ],
-				this.clawHitHandler, this);
+		this.claw.body.immovable = true;
+		this.closeClaw(false);
 
 		this.gifts = this.game.add.group();
 		this.gifts.enableBody = true;
@@ -144,9 +148,9 @@ BasicGame.Game.prototype = {
 			gift.body.debug = false;
 			gift.body.clearShapes();
 			gift.body.loadPolygon('physicsData', j);
-			gift.body.setCollisionGroup(giftCollisionGroup);
-			gift.body.collides([ giftCollisionGroup, clawCollisionGroup,
-					tilesCollisionGroup ]);
+			gift.body.setCollisionGroup(this.giftCollisionGroup);
+			gift.body.collides([ this.giftCollisionGroup, this.clawCollisionGroup,
+                this.tilesCollisionGroup ]);
 		}
 
 		// attach pointer events
@@ -177,7 +181,7 @@ BasicGame.Game.prototype = {
 		} else if (this.claw_state == 2) {
 			this.claw.body.y += this.claw_speed;
 			if (this.claw.body.y >= this.claw_length) {
-				this.claw.loadTexture('claw_closed');
+				this.closeClaw(true);
 				this.claw_state = 3;
 				this.claw_sfx(2);
 			}
