@@ -77,12 +77,13 @@ BasicGame.Game.prototype = {
 		}
         var gift = this.gifts.create(600, -70, 'sprite_' + index);
         gift.body.debug = false;
-        gift.body.clearShapes();
-        gift.body.loadPolygon('physicsData', index);
+        //gift.body.clearShapes();
+        //gift.body.loadPolygon('physicsData', index);
         gift.body.setCollisionGroup(this.giftCollisionGroup);
         gift.body.collides([ this.giftCollisionGroup, this.clawCollisionGroup,
             this.tilesCollisionGroup ]);
-	},
+        gift.body.velocity.x = this.claw_speed * 20;
+    },
 	closeClaw : function(isClose) {
 		this.claw.body.clearShapes();
 		if (isClose) {
@@ -172,8 +173,8 @@ BasicGame.Game.prototype = {
 			var gift = this.gifts.create(x, y, 'sprite_' + j);
 			x += 75;
 			gift.body.debug = false;
-			gift.body.clearShapes();
-			gift.body.loadPolygon('physicsData', j);
+			//gift.body.clearShapes();
+			//gift.body.loadPolygon('physicsData', j);
 			gift.body.setCollisionGroup(this.giftCollisionGroup);
 			gift.body.collides([ this.giftCollisionGroup, this.clawCollisionGroup,
                 this.tilesCollisionGroup ]);
