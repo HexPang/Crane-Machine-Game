@@ -30,7 +30,7 @@ BasicGame.Game = function(game) {
 
 BasicGame.Game.prototype = {
 	claw : null,
-	claw_length : 290,
+	claw_length : 120,
 	claw_state : 0,
 	claw_speed : 5,
 	zero_point : [150,-450],
@@ -43,6 +43,8 @@ BasicGame.Game.prototype = {
     giftCollisionGroup:null,
     clawCollisionGroup:null,
     tilesCollisionGroup:null,
+	score_text:null,
+	score:0,
 	claw_sfx : function(index) {
 		for ( var i in this.sfx_claw) {
 			var sfx = this.sfx_claw[i];
@@ -66,6 +68,19 @@ BasicGame.Game.prototype = {
 			this.claw_sfx(1);
 		}
 	},
+	spawnDoll: function(){
+		var index = Math.round(Math.random()*9+1);
+		if(Math.random() * 9 + 1 > 5){
+			index = index + "1";
+		}
+        var gift = this.gifts.create(600, -70, 'sprite_' + index);
+        gift.body.debug = false;
+        gift.body.clearShapes();
+        gift.body.loadPolygon('physicsData', index);
+        gift.body.setCollisionGroup(this.giftCollisionGroup);
+        gift.body.collides([ this.giftCollisionGroup, this.clawCollisionGroup,
+            this.tilesCollisionGroup ]);
+	},
 	closeClaw : function(isClose) {
 		this.claw.body.clearShapes();
 		if (isClose) {
@@ -83,7 +98,7 @@ BasicGame.Game.prototype = {
 		if (this.claw_state == 2) {
 			var dx = Math.abs(body1.x - body2.x);
 			var dy = Math.abs(body1.y - body2.y);
-			console.log(JSON.stringify([ dx, dy ]));
+			//console.log(JSON.stringify([ dx, dy ]));
 			// var constraint =
 			// this.game.physics.p2.createDistanceConstraint(body1, body2, 50);
 			if (dx <= 20 && dy < 695) {
@@ -103,6 +118,14 @@ BasicGame.Game.prototype = {
 		this.game.physics.startSystem(Phaser.Physics.P2JS);
 		this.game.physics.p2.gravity.y = 1000;
 		this.game.physics.p2.setImpactEvents(true);
+
+		this.score_text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, " Score : " + this.score, {
+            font: "65px Arial",
+            fill: "#ff0044",
+            align: "center"
+        });
+
+        this.score_text.anchor.setTo(0.5, 0.5);
 		
 		this.giftCollisionGroup = this.game.physics.p2.createCollisionGroup();
         this.clawCollisionGroup = this.game.physics.p2.createCollisionGroup();
@@ -162,16 +185,20 @@ BasicGame.Game.prototype = {
 	},
 
 	update : function() {
-
+        // if (this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
+        // {
+        //     this.spawnDoll();
+        // }
 		this.claw.body.setZeroVelocity();
 		for ( var i in this.gifts.children) {
 			var gift = this.gifts.children[i];
 			if (gift.body.y >= this.game.world.height - 70) {
 				this.sfx_win.play();
 				gift.destroy();
-				if (this.gifts.children.length === 0) {
-					this.bgm.stop();
-					this.game.state.restart(true, false);
+				this.score++;
+				this.score_text.setText(" Score : " + this.score);
+				if (this.gifts.children.length < 5) {
+					this.spawnDoll();
 				}
 			}
 		}

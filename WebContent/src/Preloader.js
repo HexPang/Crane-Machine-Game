@@ -34,6 +34,7 @@ BasicGame.Preloader.prototype = {
 		this.load.image('claw_closed', 'assets/claw_closed.png');
 		for(var i = 1;i < 11;i++){
 			this.load.image('sprite_' + i,'assets/sprites/' + i + '.png');
+            this.load.image('sprite_' + i + "1",'assets/sprites/' + i + '1.png');
 		}
 		this.load.physics('physicsData', 'assets/physics/sprites.json');
 		this.load.tilemap('level1','assets/maps/map.json?v=1',null,Phaser.Tilemap.TILED_JSON);

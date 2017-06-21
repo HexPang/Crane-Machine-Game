@@ -20,20 +20,22 @@ BasicGame.Boot.prototype = {
 
         this.input.maxPointers = 1;
         this.stage.disableVisibilityChange = true;
-        this.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT;
+        this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         
-        this.scale.setMinMax(480, 260, 1024, 768);
+        this.scale.setMinMax(320, 480, 768, 1152);
+        this.scale.refresh();
         this.scale.pageAlignHorizontally = true;
         this.scale.pageAlignVertically = true;
-     
 
-//        if (!this.game.device.desktop)
-//        {
-//            this.scale.forceOrientation(true, false);
-//            this.scale.setResizeCallback(this.gameResized, this);
-//            this.scale.enterIncorrectOrientation.add(this.enterIncorrectOrientation, this);
-//            this.scale.leaveIncorrectOrientation.add(this.leaveIncorrectOrientation, this);
-//        }
+        //this.scale.refresh();
+
+       if (!this.game.device.desktop)
+       {
+           this.scale.forceOrientation(false, true);
+           this.scale.setResizeCallback(this.gameResized, this);
+           this.scale.enterIncorrectOrientation.add(this.enterIncorrectOrientation, this);
+           this.scale.leaveIncorrectOrientation.add(this.leaveIncorrectOrientation, this);
+       }
 
     },
 
@@ -52,7 +54,10 @@ BasicGame.Boot.prototype = {
     },
 
     gameResized: function (width, height) {
+        this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 
+        this.scale.setMinMax(320, 480, 768, 1152);
+        this.scale.refresh();
         //  This could be handy if you need to do any extra processing if the game resizes.
         //  A resize could happen if for example swapping orientation on a device or resizing the browser window.
         //  Note that this callback is only really useful if you use a ScaleMode of RESIZE and place it inside your main game state.
