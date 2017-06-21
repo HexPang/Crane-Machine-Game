@@ -165,6 +165,7 @@ BasicGame.Game.prototype = {
 		this.claw.body.immovable = true;
 		this.closeClaw(false);
         this.claw_rope = this.game.add.sprite(this.zero_point[0] - 4,this.zero_point[1] - this.claw.height / 2 - 3,'claw_rope');
+		this.claw.body.collideWorldBounds = true;
 
 		this.gifts = this.game.add.group();
 		this.gifts.enableBody = true;
@@ -208,8 +209,12 @@ BasicGame.Game.prototype = {
 		}
 		// this.game.physics.p2.collide(this.gifts, this.layer);
 		if (this.claw_state == 1) {
-			this.claw.body.x += this.claw_speed;
-			this.claw_rope.x += this.claw_speed;
+			if(this.claw.body.x + this.claw.width >= this.game.world.width + 35){
+                this.claw_state = 5;
+			}else{
+                this.claw.body.x += this.claw_speed;
+                this.claw_rope.x += this.claw_speed;
+			}
 		} else if (this.claw_state == 2) {
 			this.claw.body.y += this.claw_speed;
             this.claw_rope.height += this.claw_speed;
@@ -229,20 +234,24 @@ BasicGame.Game.prototype = {
 				this.claw.body.y = this.zero_point[1];
 				this.claw_state = 4;
 			}
-		} else if (this.claw_state == 4) {
+		} else if (this.claw_state == 4 || this.claw_state == 5) {
 			this.claw.body.x -= this.claw_speed;
             this.claw_rope.x -= this.claw_speed;
 			if (this.hitGift) {
 				this.hitGift.x -= this.claw_speed;
 			}
 			if (this.claw.body.x <= this.zero_point[0]) {
-				this.claw.body.x = this.zero_point[0];
-				this.claw_state = 0;
-				this.claw_sfx(-1);
-				this.closeClaw(false);
-				if (this.hitGift) {
-					this.hitGift.static = false;
-					this.hitGift = null;
+				if(this.claw_state == 5){
+					this.claw_state = 1;
+				}else{
+                    this.claw.body.x = this.zero_point[0];
+                    this.claw_state = 0;
+                    this.claw_sfx(-1);
+                    this.closeClaw(false);
+                    if (this.hitGift) {
+                        this.hitGift.static = false;
+                        this.hitGift = null;
+                    }
 				}
 			}
 		}
