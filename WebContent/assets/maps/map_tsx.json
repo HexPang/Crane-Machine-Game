@@ -1,0 +1,13 @@
+{ "columns":21,
+ "image":"..\/assets\/map.png",
+ "imageheight":490,
+ "imagewidth":1470,
+ "margin":0,
+ "name":"map",
+ "spacing":0,
+ "tilecount":147,
+ "tileheight":70,
+ "tilewidth":70,
+ "transparentcolor":"#000000",
+ "type":"tileset"
+}
