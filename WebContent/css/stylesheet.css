@@ -1,6 +1,26 @@
 body {
     margin: 0px 0px 1px 0px; /* the extra 1px allows the iOS inner/outer check to work */
-    background: #000;
+    background-image: url(../images/background.jpg);
+}
+
+.title {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 24px;
+    color: #ff8200;
+}
+
+.description {
+    padding:20px;
+    text-align: center;
+}
+
+#game canvas {
+    width:90% !important;
+    height:90% !important;
+    border-radius: 10px;
+    margin-left: auto !important;
+    margin-right:auto !important;
 }
 
 #orientation {

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.0.1" orientation="orthogonal" renderorder="right-down" width="10" height="12" tilewidth="70" tileheight="70" nextobjectid="1">
+ <tileset firstgid="1" name="world" tilewidth="70" tileheight="70" tilecount="147" columns="21">
+  <image source="map.png" width="1470" height="490"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="10" height="12">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,32,32,0,0,0,0,0,
+0,0,0,34,34,0,0,0,0,0,
+0,0,0,32,32,32,32,32,32,32,
+113,113,113,34,34,34,34,34,34,34
+</data>
+ </layer>
+</map>

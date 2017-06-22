@@ -28,14 +28,14 @@ BasicGame.Boot.prototype = {
         this.scale.pageAlignVertically = true;
 
         //this.scale.refresh();
-
-       if (!this.game.device.desktop)
-       {
-           this.scale.forceOrientation(false, true);
-           this.scale.setResizeCallback(this.gameResized, this);
-           this.scale.enterIncorrectOrientation.add(this.enterIncorrectOrientation, this);
-           this.scale.leaveIncorrectOrientation.add(this.leaveIncorrectOrientation, this);
-       }
+       //
+       // if (!this.game.device.desktop)
+       // {
+       //     this.scale.forceOrientation(false, true);
+       //     this.scale.setResizeCallback(this.gameResized, this);
+       //     this.scale.enterIncorrectOrientation.add(this.enterIncorrectOrientation, this);
+       //     this.scale.leaveIncorrectOrientation.add(this.leaveIncorrectOrientation, this);
+       // }
 
     },
 

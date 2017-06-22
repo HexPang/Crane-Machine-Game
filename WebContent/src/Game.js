@@ -33,7 +33,7 @@ BasicGame.Game.prototype = {
 	claw_rope:null,
     claw_pip:null,
     claw_box:null,
-	zero_point : [150,100],
+	zero_point : [100,100],
 	gifts : null,
 	layer : null,
 	sfx_win : null,
@@ -115,7 +115,7 @@ BasicGame.Game.prototype = {
 		}
 	},
 	create : function() {
-		this.game.stage.backgroundColor = '#2d2d2d';
+		this.game.stage.backgroundColor = '#82abba';
 		this.game.physics.startSystem(Phaser.Physics.P2JS);
 		this.game.physics.p2.gravity.y = 1000;
 		this.game.physics.p2.setImpactEvents(true);
@@ -175,7 +175,14 @@ BasicGame.Game.prototype = {
 		this.game.input.onDown.add(this.click, this);
 		this.game.input.onUp.add(this.release, this);
 		this.game.physics.p2.updateBoundsCollisionGroup();
+
+        //var button = this.game.add.button(this.game.world.centerX, this.game.world.height - 90, 'btn_play_up', this.actionOnClick, this, 2, 1, 0);
+		//button.onInputDown.add(this.click,this);
+        //button.onInputUp.add(this.release, this);
 		console.log("starting play state");
+	},
+    actionOnClick:function(){
+
 	},
 	update : function() {
         this.claw_box.x = this.claw.body.x - this.claw_box.width / 2;
@@ -194,7 +201,7 @@ BasicGame.Game.prototype = {
 			}
 		}
 		if (this.claw_state == 1) {
-			if(this.claw.body.x + this.claw.width >= this.game.world.width + 35){
+			if(this.claw.body.x + this.claw.width / 2 >= this.game.world.width){
                 this.claw_state = 5;
 			}else{
                 this.claw.body.x += this.claw_speed;

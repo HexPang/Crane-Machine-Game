@@ -43,6 +43,8 @@ BasicGame.Preloader.prototype = {
 		this.load.physics('physicsData', 'assets/physics/sprites.json');
 		this.load.tilemap('level1','assets/maps/map.json?v=1',null,Phaser.Tilemap.TILED_JSON);
 		this.load.image('world', 'assets/maps/map.png');
+
+		//this.load.image('btn_play_up','assets/button/btn_play_up.png');
 	
 		this.load.audio('win','assets/audio/win.wav');
 		this.load.audio('lose','assets/audio/oops.wav');
