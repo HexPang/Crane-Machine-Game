@@ -1,8 +1,6 @@
 BasicGame.Game = function(game) {
-
 	// When a State is added to Phaser it automatically has the following
 	// properties set on it, even if they already exist:
-
 	this.game; // a reference to the currently running game
 	this.add; // used to add sprites, text, groups, etc
 	this.camera; // a reference to the game camera
@@ -20,14 +18,11 @@ BasicGame.Game = function(game) {
 	this.particles; // the particle manager
 	this.physics; // the physics manager
 	this.rnd; // the repeatable random number generator
-
 	// You can use any of these from any function within this State.
 	// But do consider them as being 'reserved words', i.e. don't create a
 	// property for your own game called "world" or you'll over-write the world
 	// reference.
-
 };
-
 BasicGame.Game.prototype = {
 	claw : null,
 	claw_length : 720,
@@ -58,7 +53,6 @@ BasicGame.Game.prototype = {
 				sfx.stop();
 			}
 		}
-
 	},
 	click : function() {
 		if (this.claw_state === 0) {
@@ -102,7 +96,6 @@ BasicGame.Game.prototype = {
 	clawHitHandler : function(body1, body2) {
         var dx = Math.abs(body1.x - body2.x);
         var dy = Math.abs(body1.y - body2.y);
-
         console.log(dx,dy);
 		if (this.claw_state == 2) {
 			//console.log(JSON.stringify([ dx, dy ]));
@@ -117,7 +110,6 @@ BasicGame.Game.prototype = {
 				body2.setZeroVelocity();
 				this.claw_state = 3;
 			}
-
 		}
 	},
 	create : function() {
@@ -125,13 +117,11 @@ BasicGame.Game.prototype = {
 		this.game.physics.startSystem(Phaser.Physics.P2JS);
 		this.game.physics.p2.gravity.y = 1000;
 		this.game.physics.p2.setImpactEvents(true);
-
 		this.score_text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, " Score : " + this.score, {
             font: "65px Arial",
             fill: "#ff0044",
             align: "center"
         });
-
         this.score_text.anchor.setTo(0.5, 0.5);
 		
 		this.giftCollisionGroup = this.game.physics.p2.createCollisionGroup();
@@ -155,7 +145,6 @@ BasicGame.Game.prototype = {
 		this.layer.resizeWorld();
 		map.setCollisionBetween(1, 99);
 		
-
 		var tileObjects = this.game.physics.p2.convertTilemap(map, this.layer);
 		for ( var i in tileObjects) {
 			tileObjects[i].setCollisionGroup(this.tilesCollisionGroup);
@@ -168,12 +157,12 @@ BasicGame.Game.prototype = {
 		this.claw.body.static = true;
 		this.claw.body.immovable = true;
 		this.closeClaw(false);
-        this.claw_rope = this.game.add.sprite(this.zero_point[0] - 4,this.zero_point[1] - this.claw.height / 2 - 3,'claw_rope');
+        this.claw_rope = this.game.add.sprite(this.zero_point[0] - 4,this.zero_point[1] - this.claw.height / 2 - 
+3,'claw_rope');
 		this.claw.body.collideWorldBounds = true;
 		this.claw_pip = this.game.add.sprite(0,this.claw_rope.y-3,'claw_pip');
         this.claw_pip.width = this.game.width;
 		this.claw_box = this.game.add.sprite(this.claw.body.x,this.claw_pip.y,'claw_box');
-
 		this.gifts = this.game.add.group();
 		this.gifts.enableBody = true;
 		this.gifts.physicsBodyType = Phaser.Physics.P2JS;
@@ -187,24 +176,20 @@ BasicGame.Game.prototype = {
 			gift.body.collides([ this.giftCollisionGroup, this.clawCollisionGroup,
                 this.tilesCollisionGroup ]);
 		}
-
 		// attach pointer events
 		this.game.input.onDown.add(this.click, this);
 		this.game.input.onUp.add(this.release, this);
 		this.game.physics.p2.updateBoundsCollisionGroup();
-
 		console.log("starting play state");
 	},
-
 	update : function() {
         // if (this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
         // {
-        //     this.spawnDoll();
+        // this.spawnDoll();
         // }
         //this.claw.body.x,claw_pip.y
         this.claw_box.x = this.claw.body.x - this.claw_box.width / 2;
         this.claw_box.y = this.claw_pip.y - this.claw_pip.height / 2;
-
 		this.claw.body.setZeroVelocity();
 		for ( var i in this.gifts.children) {
 			var gift = this.gifts.children[i];
@@ -241,7 +226,6 @@ BasicGame.Game.prototype = {
 				this.hitGift.y -= this.claw_speed;
 			}
 			if (this.claw.body.y <= this.zero_point[1]) {
-
 				this.claw.body.y = this.zero_point[1];
 				this.claw_state = 4;
 			}
@@ -269,7 +253,7 @@ BasicGame.Game.prototype = {
 		if (this.hitGift && this.game.time.now % 30 == 0) {
 			var seed = parseInt(Math.random() * 100);
 			// console.log("SEED:" + seed);
-			if (seed >= 50) {
+			if (seed >= 95) {
 				this.hitGift.static = false;
 				this.hitGift.immovable = false;
                 this.claw.body.clearShapes();
@@ -281,22 +265,17 @@ BasicGame.Game.prototype = {
 			}
 		}else if((this.claw_state == 3 || this.claw_state == 4) && this.game.time.now % 30 == 0){
             var seed = parseInt(Math.random() * 100);
-            if (seed >= 50) {
+            if (seed >= 95) {
                 this.claw.body.clearShapes();
                 console.log("Drop It!");
             }
 		}
 	},
-
 	quitGame : function(pointer) {
-
 		// Here you should destroy anything you no longer need.
 		// Stop music, delete sprites, purge caches, free resources, all that
 		// good stuff.
-
 		// Then let's go back to the main menu.
 		this.state.start('MainMenu');
-
 	}
-
 };
