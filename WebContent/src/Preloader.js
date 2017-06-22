@@ -33,6 +33,8 @@ BasicGame.Preloader.prototype = {
 		this.load.image('claw', 'assets/sprites/claw_open.png');
 		this.load.image('claw_closed', 'assets/sprites/claw_closed.png');
         this.load.image('claw_rope', 'assets/sprites/claw_rope.png');
+        this.load.image('claw_box', 'assets/sprites/claw_box.png');
+        this.load.image('claw_pip', 'assets/sprites/claw_pip.png');
 
         for(var i = 1;i < 11;i++){
 			this.load.image('sprite_' + i,'assets/sprites/' + i + '.png');
@@ -40,7 +42,7 @@ BasicGame.Preloader.prototype = {
 		}
 		this.load.physics('physicsData', 'assets/physics/sprites.json');
 		this.load.tilemap('level1','assets/maps/map.json?v=1',null,Phaser.Tilemap.TILED_JSON);
-		this.load.image('world', 'assets/map.png');
+		this.load.image('world', 'assets/maps/map.png');
 	
 		this.load.audio('win','assets/audio/win.wav');
 		this.load.audio('lose','assets/audio/oops.wav');

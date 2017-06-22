@@ -24,6 +24,8 @@ BasicGame.Game = function(game) {
 	// reference.
 };
 BasicGame.Game.prototype = {
+	dropRate:0.2,
+	catchAssist:false,
 	claw : null,
 	claw_length : 720,
 	claw_state : 0,
@@ -73,8 +75,8 @@ BasicGame.Game.prototype = {
 		}
         var gift = this.gifts.create(600, -70, 'sprite_' + index);
         gift.body.debug = false;
-        //gift.body.clearShapes();
-        //gift.body.loadPolygon('physicsData', index);
+        gift.body.clearShapes();
+        gift.body.loadPolygon('physicsData', index);
         gift.body.setCollisionGroup(this.giftCollisionGroup);
         gift.body.collides([ this.giftCollisionGroup, this.clawCollisionGroup,
             this.tilesCollisionGroup ]);
@@ -97,7 +99,7 @@ BasicGame.Game.prototype = {
         var dx = Math.abs(body1.x - body2.x);
         var dy = Math.abs(body1.y - body2.y);
         console.log(dx,dy);
-		if (this.claw_state == 2) {
+		if (this.claw_state == 2 && this.catchAssist) {
 			//console.log(JSON.stringify([ dx, dy ]));
 			// var constraint =
 			// this.game.physics.p2.createDistanceConstraint(body1, body2, 50);
@@ -167,14 +169,7 @@ BasicGame.Game.prototype = {
 		this.gifts.enableBody = true;
 		this.gifts.physicsBodyType = Phaser.Physics.P2JS;
 		for (var j = 1; j < this.max_doll; j++) {
-			var gift = this.gifts.create(x, y, 'sprite_' + j);
-			x += 75;
-			gift.body.debug = false;
-			//gift.body.clearShapes();
-			//gift.body.loadPolygon('physicsData', j);
-			gift.body.setCollisionGroup(this.giftCollisionGroup);
-			gift.body.collides([ this.giftCollisionGroup, this.clawCollisionGroup,
-                this.tilesCollisionGroup ]);
+			this.spawnDoll();
 		}
 		// attach pointer events
 		this.game.input.onDown.add(this.click, this);
@@ -183,11 +178,6 @@ BasicGame.Game.prototype = {
 		console.log("starting play state");
 	},
 	update : function() {
-        // if (this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
-        // {
-        // this.spawnDoll();
-        // }
-        //this.claw.body.x,claw_pip.y
         this.claw_box.x = this.claw.body.x - this.claw_box.width / 2;
         this.claw_box.y = this.claw_pip.y - this.claw_pip.height / 2;
 		this.claw.body.setZeroVelocity();
@@ -203,7 +193,6 @@ BasicGame.Game.prototype = {
 				}
 			}
 		}
-		// this.game.physics.p2.collide(this.gifts, this.layer);
 		if (this.claw_state == 1) {
 			if(this.claw.body.x + this.claw.width >= this.game.world.width + 35){
                 this.claw_state = 5;
@@ -251,9 +240,9 @@ BasicGame.Game.prototype = {
 			}
 		}
 		if (this.hitGift && this.game.time.now % 30 == 0) {
-			var seed = parseInt(Math.random() * 100);
+			var seed = Math.random();
 			// console.log("SEED:" + seed);
-			if (seed >= 95) {
+			if (seed <= this.dropRate && seed > 0) {
 				this.hitGift.static = false;
 				this.hitGift.immovable = false;
                 this.claw.body.clearShapes();
@@ -264,8 +253,8 @@ BasicGame.Game.prototype = {
 				this.sfx_lose.play();
 			}
 		}else if((this.claw_state == 3 || this.claw_state == 4) && this.game.time.now % 30 == 0){
-            var seed = parseInt(Math.random() * 100);
-            if (seed >= 95) {
+            var seed = Math.random();
+            if (seed <= this.dropRate && seed > 0) {
                 this.claw.body.clearShapes();
                 console.log("Drop It!");
             }
