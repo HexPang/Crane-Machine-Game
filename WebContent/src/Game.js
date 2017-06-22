@@ -119,7 +119,7 @@ BasicGame.Game.prototype = {
 		this.game.physics.startSystem(Phaser.Physics.P2JS);
 		this.game.physics.p2.gravity.y = 1000;
 		this.game.physics.p2.setImpactEvents(true);
-		this.score_text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, " Score : " + this.score, {
+		this.score_text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, " 分数 : " + this.score, {
             font: "65px Arial",
             fill: "#ff0044",
             align: "center"
@@ -152,6 +152,8 @@ BasicGame.Game.prototype = {
 			tileObjects[i].setCollisionGroup(this.tilesCollisionGroup);
 			tileObjects[i].collides([ this.giftCollisionGroup, this.clawCollisionGroup ]);
 		}
+		this.claw_length = this.layer.layer.heightInPixels - 140 - 35;
+		console.log(this.claw_length);
 		this.layer.debug = false;
 		this.claw = this.game.add.sprite(this.zero_point[0], this.zero_point[1],
 				'claw');
@@ -194,7 +196,7 @@ BasicGame.Game.prototype = {
 				this.sfx_win.play();
 				gift.destroy();
 				this.score++;
-				this.score_text.setText(" Score : " + this.score);
+				this.score_text.setText(" 分数 : " + this.score);
 				if (this.gifts.children.length < this.max_doll) {
 					this.spawnDoll();
 				}

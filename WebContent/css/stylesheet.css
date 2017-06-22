@@ -16,11 +16,11 @@ body {
 }
 
 #game canvas {
-    width:90% !important;
+    /*width:90% !important;*/
     height:90% !important;
-    border-radius: 10px;
-    margin-left: auto !important;
-    margin-right:auto !important;
+    /*border-radius: 10px;*/
+    /*margin-left: auto !important;*/
+    /*margin-right:auto !important;*/
 }
 
 #orientation {
