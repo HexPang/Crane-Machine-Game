@@ -269,7 +269,7 @@ BasicGame.Game.prototype = {
 		if (this.hitGift && this.game.time.now % 30 == 0) {
 			var seed = parseInt(Math.random() * 100);
 			// console.log("SEED:" + seed);
-			if (seed >= 50 && seed <= 51) {
+			if (seed >= 50) {
 				this.hitGift.static = false;
 				this.hitGift.immovable = false;
                 this.claw.body.clearShapes();
@@ -280,9 +280,8 @@ BasicGame.Game.prototype = {
 				this.sfx_lose.play();
 			}
 		}else if((this.claw_state == 3 || this.claw_state == 4) && this.game.time.now % 30 == 0){
-            console.log(this.game.time.time);
             var seed = parseInt(Math.random() * 100);
-            if (seed == 99) {
+            if (seed >= 50) {
                 this.claw.body.clearShapes();
                 console.log("Drop It!");
             }
