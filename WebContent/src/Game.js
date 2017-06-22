@@ -46,6 +46,12 @@ BasicGame.Game.prototype = {
 	score_text:null,
 	max_doll:5,
 	score:0,
+    timer:null,
+    checkGifts: function(){
+        if (this.gifts.children.length < this.max_doll) {
+            this.spawnDoll();
+        }
+    },
 	claw_sfx : function(index) {
 		for ( var i in this.sfx_claw) {
 			var sfx = this.sfx_claw[i];
@@ -69,18 +75,15 @@ BasicGame.Game.prototype = {
 		}
 	},
 	spawnDoll: function(){
-		var index = Math.round(Math.random()*9+1);
-		if(Math.random() * 9 + 1 > 5){
-			index = index + "1";
-		}
-        var gift = this.gifts.create(600, -70, 'sprite_' + index);
+		var index = Math.round(Math.random()*9+3);
+        var gift = this.gifts.create(this.game.world.centerX + Math.random() * 100 * 1.5, 0, 'sprites',index + ".png");
         gift.body.debug = false;
         gift.body.clearShapes();
-        gift.body.loadPolygon('physicsData', index);
+        gift.body.loadPolygon('spritePhysics', index);
         gift.body.setCollisionGroup(this.giftCollisionGroup);
         gift.body.collides([ this.giftCollisionGroup, this.clawCollisionGroup,
             this.tilesCollisionGroup ]);
-        gift.body.velocity.x = this.claw_speed * 20;
+        //gift.body.velocity.x = this.claw_speed * 20;
     },
 	closeClaw : function(isClose) {
 		this.claw.body.clearShapes();
@@ -95,10 +98,14 @@ BasicGame.Game.prototype = {
         this.claw.body.collides([ this.tilesCollisionGroup, this.giftCollisionGroup ],
             this.clawHitHandler, this);
 	},
-	clawHitHandler : function(body1, body2) {
+	clawHitHandler : function(body1, body2,hit) {
         var dx = Math.abs(body1.x - body2.x);
         var dy = Math.abs(body1.y - body2.y);
-        console.log(dx,dy);
+        if(hit.boundingRadius >= 1.8){
+            console.log(hit.boundingRadius);
+            this.claw_state = 3;
+            this.closeClaw(true);
+        }
 		if (this.claw_state == 2 && this.catchAssist) {
 			//console.log(JSON.stringify([ dx, dy ]));
 			// var constraint =
@@ -117,7 +124,7 @@ BasicGame.Game.prototype = {
 	create : function() {
 		this.game.stage.backgroundColor = '#82abba';
 		this.game.physics.startSystem(Phaser.Physics.P2JS);
-		this.game.physics.p2.gravity.y = 1000;
+		this.game.physics.p2.gravity.y = 500;
 		this.game.physics.p2.setImpactEvents(true);
 		this.score_text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, " 分数 : " + this.score, {
             font: "65px Arial",
@@ -170,14 +177,14 @@ BasicGame.Game.prototype = {
 		this.gifts = this.game.add.group();
 		this.gifts.enableBody = true;
 		this.gifts.physicsBodyType = Phaser.Physics.P2JS;
-		for (var j = 1; j < this.max_doll; j++) {
-			this.spawnDoll();
-		}
 		// attach pointer events
 		this.game.input.onDown.add(this.click, this);
 		this.game.input.onUp.add(this.release, this);
 		this.game.physics.p2.updateBoundsCollisionGroup();
 
+        this.timer = this.game.time.create(false);
+        this.timer.loop(1000, this.checkGifts, this);
+        this.timer.start();
         //var button = this.game.add.button(this.game.world.centerX, this.game.world.height - 90, 'btn_play_up', this.actionOnClick, this, 2, 1, 0);
 		//button.onInputDown.add(this.click,this);
         //button.onInputUp.add(this.release, this);
@@ -187,8 +194,6 @@ BasicGame.Game.prototype = {
 
 	},
 	update : function() {
-        this.claw_box.x = this.claw.body.x - this.claw_box.width / 2;
-        this.claw_box.y = this.claw_pip.y - this.claw_pip.height / 2;
 		this.claw.body.setZeroVelocity();
 		for ( var i in this.gifts.children) {
 			var gift = this.gifts.children[i];
@@ -197,14 +202,11 @@ BasicGame.Game.prototype = {
 				gift.destroy();
 				this.score++;
 				this.score_text.setText(" 分数 : " + this.score);
-				if (this.gifts.children.length < this.max_doll) {
-					this.spawnDoll();
-				}
 			}
 		}
 		if (this.claw_state == 1) {
 			if(this.claw.body.x + this.claw.width / 2 >= this.game.world.width){
-                this.claw_state = 5;
+                this.claw_state = 4;
 			}else{
                 this.claw.body.x += this.claw_speed;
                 this.claw_rope.x += this.claw_speed;
@@ -268,6 +270,8 @@ BasicGame.Game.prototype = {
                 console.log("Drop It!");
             }
 		}
+        this.claw_box.x = this.claw.body.x - this.claw_box.width / 2;
+        this.claw_box.y = this.claw_pip.y - this.claw_pip.height / 2;
 	},
 	quitGame : function(pointer) {
 		// Here you should destroy anything you no longer need.
