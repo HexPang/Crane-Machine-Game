@@ -34,7 +34,9 @@ BasicGame.Game.prototype = {
 	claw_state : 0,
 	claw_speed : 5,
 	claw_rope:null,
-	zero_point : [150,120],
+    claw_pip:null,
+    claw_box:null,
+	zero_point : [150,100],
 	gifts : null,
 	layer : null,
 	sfx_win : null,
@@ -98,9 +100,11 @@ BasicGame.Game.prototype = {
             this.clawHitHandler, this);
 	},
 	clawHitHandler : function(body1, body2) {
+        var dx = Math.abs(body1.x - body2.x);
+        var dy = Math.abs(body1.y - body2.y);
+
+        console.log(dx,dy);
 		if (this.claw_state == 2) {
-			var dx = Math.abs(body1.x - body2.x);
-			var dy = Math.abs(body1.y - body2.y);
 			//console.log(JSON.stringify([ dx, dy ]));
 			// var constraint =
 			// this.game.physics.p2.createDistanceConstraint(body1, body2, 50);
@@ -166,6 +170,9 @@ BasicGame.Game.prototype = {
 		this.closeClaw(false);
         this.claw_rope = this.game.add.sprite(this.zero_point[0] - 4,this.zero_point[1] - this.claw.height / 2 - 3,'claw_rope');
 		this.claw.body.collideWorldBounds = true;
+		this.claw_pip = this.game.add.sprite(0,this.claw_rope.y-3,'claw_pip');
+        this.claw_pip.width = this.game.width;
+		this.claw_box = this.game.add.sprite(this.claw.body.x,this.claw_pip.y,'claw_box');
 
 		this.gifts = this.game.add.group();
 		this.gifts.enableBody = true;
@@ -194,6 +201,10 @@ BasicGame.Game.prototype = {
         // {
         //     this.spawnDoll();
         // }
+        //this.claw.body.x,claw_pip.y
+        this.claw_box.x = this.claw.body.x - this.claw_box.width / 2;
+        this.claw_box.y = this.claw_pip.y - this.claw_pip.height / 2;
+
 		this.claw.body.setZeroVelocity();
 		for ( var i in this.gifts.children) {
 			var gift = this.gifts.children[i];
@@ -255,7 +266,7 @@ BasicGame.Game.prototype = {
 				}
 			}
 		}
-		if (this.hitGift && this.game.time.elapsed % 2 === 0) {
+		if (this.hitGift && this.game.time.now % 30 == 0) {
 			var seed = parseInt(Math.random() * 100);
 			// console.log("SEED:" + seed);
 			if (seed >= 50 && seed <= 51) {
@@ -263,18 +274,19 @@ BasicGame.Game.prototype = {
 				this.hitGift.immovable = false;
                 this.claw.body.clearShapes();
 				if(this.claw_state == 4){
-					this.hitGift.velocity.x = -this.claw_speed * 20;					
+					this.hitGift.velocity.x = -this.claw_speed * 20;
 				}
 				this.hitGift = null;
 				this.sfx_lose.play();
 			}
-		}else if(this.claw_state == 3 || this.claw_state == 4){
+		}else if((this.claw_state == 3 || this.claw_state == 4) && this.game.time.now % 30 == 0){
+            console.log(this.game.time.time);
             var seed = parseInt(Math.random() * 100);
-            if (seed >= 50 && seed <= 51) {
+            if (seed == 99) {
                 this.claw.body.clearShapes();
+                console.log("Drop It!");
             }
 		}
-
 	},
 
 	quitGame : function(pointer) {
