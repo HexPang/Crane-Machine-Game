@@ -46,7 +46,9 @@ BasicGame.Game.prototype = {
 	score_text:null,
 	max_doll:5,
 	score:0,
+    coin:0,
     timer:null,
+    tileObjects:null,
     checkGifts: function(){
         if (this.gifts.children.length < this.max_doll) {
             this.spawnDoll();
@@ -63,9 +65,12 @@ BasicGame.Game.prototype = {
 		}
 	},
 	click : function() {
-		if (this.claw_state === 0) {
-			this.claw_state = 1;
-			this.claw_sfx(0);
+		if (this.claw_state === 0 && this.gifts.children.length == this.max_doll) {
+			if(this.coin > 0){
+				this.coin--;
+                this.claw_state = 1;
+                this.claw_sfx(0);
+			}
 		}
 	},
 	release : function() {
@@ -121,6 +126,30 @@ BasicGame.Game.prototype = {
 			}
 		}
 	},
+	checkOverlap:function(){
+		var tiles = this.layer.getTiles(0,0,this.game.world.width,this.game.world.height);
+        for(var i in tiles){
+        	if(tiles[i].index > -1){
+                for(var j in this.gifts.children) {
+                    var sprite = this.gifts.children[j];
+                    var boundsA = new Phaser.Rectangle(sprite.centerX,sprite.centerY,sprite.width,sprite.height);
+                    var tile = tiles[i];
+                    var boundsB = new Phaser.Rectangle(tile.worldX,tile.worldY,tile.width,tile.height);
+
+                    var overlap = Phaser.Rectangle.intersects(boundsA, boundsB);
+                    if(overlap){
+                    	var t1 = (boundsA.y - boundsB.y) + sprite.height / 2;
+                    	if(t1 >= sprite.height / 2){
+                            console.log(t1);
+                            sprite.body.y -= sprite.height / 2;
+                            //sprite.body.velocity.y = -1000;
+						}
+                    }
+                }
+			}
+        }
+		return false;
+	},
 	create : function() {
 		this.game.stage.backgroundColor = '#82abba';
 		this.game.physics.startSystem(Phaser.Physics.P2JS);
@@ -154,10 +183,10 @@ BasicGame.Game.prototype = {
 		this.layer.resizeWorld();
 		map.setCollisionBetween(1, 99);
 		
-		var tileObjects = this.game.physics.p2.convertTilemap(map, this.layer);
-		for ( var i in tileObjects) {
-			tileObjects[i].setCollisionGroup(this.tilesCollisionGroup);
-			tileObjects[i].collides([ this.giftCollisionGroup, this.clawCollisionGroup ]);
+		this.tileObjects = this.game.physics.p2.convertTilemap(map, this.layer);
+		for ( var i in this.tileObjects) {
+            this.tileObjects[i].setCollisionGroup(this.tilesCollisionGroup);
+            this.tileObjects[i].collides([ this.giftCollisionGroup, this.clawCollisionGroup ]);
 		}
 		this.claw_length = this.layer.layer.heightInPixels - 140 - 35;
 		console.log(this.claw_length);
@@ -185,10 +214,15 @@ BasicGame.Game.prototype = {
         this.timer = this.game.time.create(false);
         this.timer.loop(1000, this.checkGifts, this);
         this.timer.start();
-        //var button = this.game.add.button(this.game.world.centerX, this.game.world.height - 90, 'btn_play_up', this.actionOnClick, this, 2, 1, 0);
-		//button.onInputDown.add(this.click,this);
-        //button.onInputUp.add(this.release, this);
+
+        var overlapTimer = this.game.time.create(false);
+        overlapTimer.loop(1000,this.checkOverlap,this);
+        overlapTimer.start();
+		this.coin = 50;
 		console.log("starting play state");
+	},
+    updateUI:function(){
+        this.score_text.setText("硬币:" + this.coin + "\n分数:" + this.score);
 	},
     actionOnClick:function(){
 
@@ -201,12 +235,15 @@ BasicGame.Game.prototype = {
 				this.sfx_win.play();
 				gift.destroy();
 				this.score++;
-				this.score_text.setText(" 分数 : " + this.score);
+				if(this.score % 2 == 0){
+					this.coin++;
+				}
 			}
 		}
 		if (this.claw_state == 1) {
 			if(this.claw.body.x + this.claw.width / 2 >= this.game.world.width){
                 this.claw_state = 4;
+                this.coin++;
 			}else{
                 this.claw.body.x += this.claw_speed;
                 this.claw_rope.x += this.claw_speed;
@@ -266,12 +303,13 @@ BasicGame.Game.prototype = {
 		}else if((this.claw_state == 3 || this.claw_state == 4) && this.game.time.now % 30 == 0){
             var seed = Math.random();
             if (seed <= this.dropRate && seed > 0) {
-                this.claw.body.clearShapes();
-                console.log("Drop It!");
+                //this.claw.body.clearShapes();
             }
 		}
         this.claw_box.x = this.claw.body.x - this.claw_box.width / 2;
         this.claw_box.y = this.claw_pip.y - this.claw_pip.height / 2;
+
+        this.updateUI();
 	},
 	quitGame : function(pointer) {
 		// Here you should destroy anything you no longer need.
