@@ -105,26 +105,11 @@ BasicGame.Game.prototype = {
 	},
 	clawHitHandler : function(body1, body2,hit) {
         var dx = Math.abs(body1.x - body2.x);
-        var dy = Math.abs(body1.y - body2.y);
-        if(hit.boundingRadius >= 1.8){
-            console.log(hit.boundingRadius);
+        var dy = Math.abs(body1.sprite.centerY - body2.sprite.centerY);
+        if(hit.boundingRadius >= 1.8 && this.claw_state == 2){
             this.claw_state = 3;
             this.closeClaw(true);
         }
-		if (this.claw_state == 2 && this.catchAssist) {
-			//console.log(JSON.stringify([ dx, dy ]));
-			// var constraint =
-			// this.game.physics.p2.createDistanceConstraint(body1, body2, 50);
-			if (dx <= 15 && dy < 50) {
-				this.closeClaw(true);
-				this.claw_sfx(2);
-				this.hitGift = body2;
-				body2.static = true;
-				body2.immovable = true;
-				body2.setZeroVelocity();
-				this.claw_state = 3;
-			}
-		}
 	},
 	checkOverlap:function(){
 		var tiles = this.layer.getTiles(0,0,this.game.world.width,this.game.world.height);
@@ -140,9 +125,7 @@ BasicGame.Game.prototype = {
                     if(overlap){
                     	var t1 = (boundsA.y - boundsB.y) + sprite.height / 2;
                     	if(t1 >= sprite.height / 2){
-                            console.log(t1);
                             sprite.body.y -= sprite.height / 2;
-                            //sprite.body.velocity.y = -1000;
 						}
                     }
                 }
@@ -153,7 +136,7 @@ BasicGame.Game.prototype = {
 	create : function() {
 		this.game.stage.backgroundColor = '#82abba';
 		this.game.physics.startSystem(Phaser.Physics.P2JS);
-		this.game.physics.p2.gravity.y = 500;
+		this.game.physics.p2.gravity.y = 2000;
 		this.game.physics.p2.setImpactEvents(true);
 		this.score_text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, " 分数 : " + this.score, {
             font: "65px Arial",
@@ -199,7 +182,7 @@ BasicGame.Game.prototype = {
 		this.closeClaw(false);
         this.claw_rope = this.game.add.sprite(this.zero_point[0] - 4,this.zero_point[1] - this.claw.height / 2 - 
 3,'claw_rope');
-		this.claw.body.collideWorldBounds = true;
+		this.claw.body.collideWorldBounds = false;
 		this.claw_pip = this.game.add.sprite(0,this.claw_rope.y-3,'claw_pip');
         this.claw_pip.width = this.game.width;
 		this.claw_box = this.game.add.sprite(this.claw.body.x,this.claw_pip.y,'claw_box');
